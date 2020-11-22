@@ -158,7 +158,7 @@ export default class Board {
     try {
       const array = JSON.parse(value);
       array.forEach((row, i) => row.forEach(
-        (cell, j) => this.setCellValue(i, j, cell === '.' ? '' : +cell),
+        (cell, j) => this.setCellValue(i, j, cell === '.' ? '' : +cell, false),
       ));
     } catch (_err) {
       alert('Incorrect array');
