@@ -6,20 +6,9 @@ import { getSector } from '../utils/utils';
  */
 export default class Board {
   /**
-   * When going through the board,
-   * this stores the value of the previously edited cell in DOM
-   */
-  prev = null
-
-  /**
    * The sudoku board along with the DOM elements
    */
   board = new Array(9)
-
-  /**
-   * Speed of the step
-   */
-  speed = 10
 
   /**
    * Creates a new memo
@@ -32,6 +21,15 @@ export default class Board {
       alert(e.message);
       return false;
     }
+  }
+
+  /**
+   * Repaints the board
+   */
+  repaintBoard = () => {
+    this.board.forEach((row) => row.forEach((cell) => {
+      cell.$el.innerText = cell.value;
+    }));
   }
 
   /**
@@ -58,24 +56,12 @@ export default class Board {
    * @param {Boolean} visualizeMode - Weather we want to visualize or not.
    * If we want to visualize, then we set the previous value, else we don't
    */
-  setCellValue = (row, column, value, visualizeMode = true) => {
+  setCellValue = (row, column, value) => {
     // Step 1: Get the cell
     const cell = this.board[row][column];
 
     // Step 2: Set the value
     cell.value = value;
-    if (+cell.$el.innerText !== value) {
-      cell.$el.innerText = value;
-    }
-
-    // Step 3: Visualization steps if required
-    if (visualizeMode) {
-      if (this.prev) {
-        this.prev.classList.remove('current');
-      }
-      cell.$el.classList.add('current');
-      this.prev = cell.$el;
-    }
   }
 
   /**
@@ -85,34 +71,28 @@ export default class Board {
    * @param {Number} sector
    * @param {Number} num
    */
-  tryOne = (row, column, sector, num) => new Promise((resolve) => {
-    // Set Data
+  tryOne = (row, column, sector, num) => {
     this.memo.setVal('row', row, num, true);
     this.memo.setVal('column', column, num, true);
     this.memo.setVal('sector', sector, num, true);
     this.setCellValue(row, column, num);
 
-    // For visualizing it
-    setTimeout(() => {
-      this.solveBoard(row, column).then((res) => {
-        if (!res) {
-          // Unset Data
-          this.memo.setVal('row', row, num, false);
-          this.memo.setVal('column', column, num, false);
-          this.memo.setVal('sector', sector, num, false);
-          this.setCellValue(row, column, '');
-        }
-        resolve(res);
-      });
-    }, this.speed);
-  })
+    const res = this.solveBoard(row, column);
+    if (!res) {
+      this.memo.setVal('row', row, num, false);
+      this.memo.setVal('column', column, num, false);
+      this.memo.setVal('sector', sector, num, false);
+      this.setCellValue(row, column, '');
+    }
+    return res;
+  }
 
   /**
    * Solves the board
    * @param {Number} row
    * @param {Number} column
    */
-  solveBoard = async (row = 0, column = 0) => {
+  solveBoard = (row = 0, column = 0) => {
     // Step 1: Base case
     const [x, y] = this.getFirstUnsolved(row, column);
     if (x === false) {
@@ -126,7 +106,7 @@ export default class Board {
       if (!this.memo.checkIfIn('row', x, i)
       && !this.memo.checkIfIn('column', y, i)
       && !this.memo.checkIfIn('sector', s, i)) {
-        solved = await this.tryOne(x, y, s, i);
+        solved = this.tryOne(x, y, s, i);
       }
 
       if (solved) {
@@ -144,9 +124,8 @@ export default class Board {
    */
   setUpBeforeSolveAndSolve = async (event) => {
     if (this.createNewMemo()) {
-      event.target.setAttribute('disabled', true);
-      await this.solveBoard();
-      event.target.removeAttribute('disabled');
+      this.solveBoard();
+      this.repaintBoard();
     }
   }
 
@@ -158,23 +137,12 @@ export default class Board {
     try {
       const array = JSON.parse(value);
       array.forEach((row, i) => row.forEach(
-        (cell, j) => this.setCellValue(i, j, cell === '.' ? '' : +cell, false),
+        (cell, j) => this.setCellValue(i, j, cell === '.' ? '' : +cell),
       ));
+      this.repaintBoard();
     } catch (_err) {
       alert('Incorrect array');
     }
-  }
-
-  /**
-   * Set the speed
-   * @param {InputEvent} event
-   */
-  handleSpeedInput = (event) => {
-    // Step 1: Get the value
-    const { value } = event.target;
-
-    // Step 2: Set the value
-    this.speed = value === '' ? 0 : +value;
   }
 
   /**
@@ -194,7 +162,7 @@ export default class Board {
 
     // Step 3: Setting values
     const [x, y] = element.id.split('-');
-    this.setCellValue(x, y, value.length === 0 ? '' : +value, false);
+    this.setCellValue(x, y, value.length === 0 ? '' : +value);
   }
 
   /**
