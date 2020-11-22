@@ -1,0 +1,91 @@
+/* BASE STYLES */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #fff;
+  color: #333;
+  line-height: 1.6;
+}
+
+h1, h2 {
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+header {
+  position: fixed;
+  width: 100%;
+  padding: 0.7rem;
+  color: #737373;
+  box-shadow: 0 5px 6px -6px #d3d3d3;
+}
+
+input, textarea, button {
+  padding: 0.5rem;
+  flex-grow: 1;
+  max-width: 349px;
+}
+
+textarea {
+  resize: none;
+}
+
+/* Other styles */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 5rem;
+  margin-bottom: 5rem;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+}
+
+.input-wrapper {
+  margin: 0.1rem 1rem 1rem;
+}
+
+.input-wrapper label {
+  display: block;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.input-wrapper input,
+.input-wrapper textarea {
+  padding: 7px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.input-wrapper button {
+  width: 100%;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+@media(max-width:766px) {
+  .card {
+    box-shadow: none;
+  }
+
+  .controls {
+    margin-top: 3rem;
+  }
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+    rel="stylesheet">
+  <title>Sudoku</title>
+</head>
+
+<body>
+  <!-- Main -->
+  <main>
+    <div class="wrapper">
+      <!-- Heading -->
+      <div>
+        <h1 class="logo">
+          <span class="text-primary">Sudoku</span>
+          <span class="font-normal">Solver</span>
+        </h1>
+      </div>
+
+      <!-- Card -->
+      <div class="card">
+        <!-- Sudoku table -->
+        <div id="main"></div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <!-- Input section -->
+          <div class="input-section">
+            <!-- Speed input -->
+            <div class="input-wrapper">
+              <label for="speed">Speed (ms)</label>
+              <input type="number" id="speed" value="10" />
+            </div>
+
+            <!-- Array input area -->
+            <div class="input-wrapper">
+              <label for="array-input">Array input for initial state</label>
+              <textarea id="arrayInput" rows="5" placeholder='[["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]
+              '></textarea>
+            </div>
+          </div>
+
+          <!-- Button section -->
+          <div class="button-section">
+            <!-- Add from array -->
+            <div class="input-wrapper">
+              <button class="btn" id="addArrayButton">Add From Array</button>
+            </div>
+
+            <!-- Solve button -->
+            <div class="input-wrapper">
+              <button class="btn" id="solve">Solve</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

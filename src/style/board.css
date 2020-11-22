@@ -1,0 +1,30 @@
+td {
+  height:40px;
+  width:40px;
+  border:1px solid #49c1a2;
+  color: #249c7d;
+  text-align:center;
+  border-radius: 5px;
+}
+
+td:nth-child(3n) {
+  border-right:solid #49c1a2;
+}
+
+tr:first-child {
+  border-top:solid #49c1a2;
+}
+
+tr:nth-child(3n) td {
+  border-bottom:solid #49c1a2;
+}
+
+tr:nth-child(2n) td:nth-child(2n),
+tr:nth-child(2n+1) td:nth-child(2n+1) {
+  background-color: rgba(73, 193, 162, 0.5)
+}
+
+td.current {
+  background-color: #ffb8b8 !important;
+  color: #ff007b !important;
+}

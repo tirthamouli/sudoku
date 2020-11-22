@@ -1,0 +1,32 @@
+/* Text colors */
+.text-primary {
+  color: #28a745;
+}
+
+.text-secondary {
+  color: #0284d0;
+}
+
+/* Fonts */
+.font-normal {
+  font-weight: 400;
+}
+
+/* Button */
+.btn {
+  cursor: pointer;
+  display: inline-block;
+  padding: 7px;
+  color: #fff;
+  background-color: #49c1a2;
+  border: none;
+  border-radius: 3px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn:disabled {
+  background-color: gray;
+}
