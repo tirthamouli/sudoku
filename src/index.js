@@ -1,6 +1,5 @@
 import './style/util.css';
 import './style/style.css';
-import './style/board.css';
 import Board from './components/board';
 
 const board = new Board();

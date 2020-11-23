@@ -1,4 +1,5 @@
-import Memo from '../lib/memo';
+import './board.css';
+import Memo2D from '../lib/memo2D';
 import { getSector } from '../utils/utils';
 
 /**
@@ -11,11 +12,29 @@ export default class Board {
   board = new Array(9)
 
   /**
-   * Creates a new memo
+   * Sets up the initial memo
+   */
+  setUpMemo = () => {
+    this.board.forEach((vertical, i) => vertical.forEach((cell, j) => {
+      if (cell.value !== '') {
+        if (!this.row.setVal(i, cell.value, true)
+              || !this.column.setVal(j, cell.value, true)
+            || !this.sector.setVal(getSector(i, j), cell.value, true)) {
+          throw new Error('Incorrect board');
+        }
+      }
+    }));
+  }
+
+  /**
+   * Creates a new memo for row column and sector
    */
   createNewMemo = () => {
+    this.row = new Memo2D();
+    this.column = new Memo2D();
+    this.sector = new Memo2D();
     try {
-      this.memo = new Memo(this.board);
+      this.setUpMemo();
       return true;
     } catch (e) {
       alert(e.message);
@@ -72,16 +91,16 @@ export default class Board {
    * @param {Number} num
    */
   tryOne = (row, column, sector, num) => {
-    this.memo.setVal('row', row, num, true);
-    this.memo.setVal('column', column, num, true);
-    this.memo.setVal('sector', sector, num, true);
+    this.row.setVal(row, num, true);
+    this.column.setVal(column, num, true);
+    this.sector.setVal(sector, num, true);
     this.setCellValue(row, column, num);
 
     const res = this.solveBoard(row, column);
     if (!res) {
-      this.memo.setVal('row', row, num, false);
-      this.memo.setVal('column', column, num, false);
-      this.memo.setVal('sector', sector, num, false);
+      this.row.setVal(row, num, false);
+      this.column.setVal(column, num, false);
+      this.sector.setVal(sector, num, false);
       this.setCellValue(row, column, '');
     }
     return res;
@@ -103,9 +122,9 @@ export default class Board {
     const s = getSector(x, y);
     let solved = false;
     for (let i = 1; i <= 9; i += 1) {
-      if (!this.memo.checkIfIn('row', x, i)
-      && !this.memo.checkIfIn('column', y, i)
-      && !this.memo.checkIfIn('sector', s, i)) {
+      if (!this.row.checkIfIn(x, i)
+      && !this.column.checkIfIn(y, i)
+      && !this.sector.checkIfIn(s, i)) {
         solved = this.tryOne(x, y, s, i);
       }
 
@@ -120,9 +139,8 @@ export default class Board {
 
   /**
    * Setup and solve board
-   * @param {MouseEvent} event
    */
-  setUpBeforeSolveAndSolve = async (event) => {
+  setUpBeforeSolveAndSolve = async () => {
     if (this.createNewMemo()) {
       this.solveBoard();
       this.repaintBoard();
