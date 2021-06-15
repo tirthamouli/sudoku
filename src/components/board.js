@@ -20,7 +20,22 @@ export default class Board {
   /**
    * Speed of the step
    */
-  speed = 10
+  speed = 1000
+
+  /**
+   * Stores the row memo
+   */
+  row = null
+
+  /**
+   * Stores the column memo
+   */
+  column = null
+
+  /**
+   * Stores the sector memo
+   */
+  sector = null
 
   /**
    * Weather the board has been solved or not
@@ -31,7 +46,7 @@ export default class Board {
    * Sets up the initial memo
    */
   setUpMemo = () => {
-    this.board.forEach((vertical, i) => vertical.forEach((cell, j) => {
+    this.board.forEach((boardRow, i) => boardRow.forEach((cell, j) => {
       if (cell.value !== '') {
         if (!this.row.setVal(i, cell.value, true)
               || !this.column.setVal(j, cell.value, true)
@@ -60,13 +75,14 @@ export default class Board {
 
   /**
    * Get the first unsolved cell after the current row and column
-   * @param {Number} row - Current row
-   * @param {Number} column - Current column
+   * @param {number} row - Current row
+   * @param {number} column - Current column
    */
   getFirstUnsolved = (row, column) => {
     for (let i = row; i < 9; i += 1) {
       for (let j = i === row ? column : 0; j < 9; j += 1) {
-        if (this.board[i][j].value === '') {
+        const { value } = this.board[i][j];
+        if (value === '') {
           return [i, j];
         }
       }
@@ -75,14 +91,32 @@ export default class Board {
   }
 
   /**
-   * Set the board value in array and in DOM
-   * @param {Number} row - Row where the value needs to be set
-   * @param {Number} column - Column where the value needs to be set
-   * @param {Number} value - Value that needs to be set
-   * @param {Boolean} visualizeMode - Weather we want to visualize or not.
-   * If we want to visualize, then we set the previous value, else we don't
+   * Update classList for visualization
+   * @param {HTMLTableDataCellElement} currentCell
+   * @param {HTMLTableDataCellElement} prevCell
+   * @param {'solved' | 'fault'} solvedOrFault
    */
-  setCellValue = (row, column, value, visualizeMode = true) => {
+  updateClassList = (currentCell, prevCell, solvedOrFault) => {
+    if (prevCell) {
+      prevCell.className = solvedOrFault;
+      if (solvedOrFault === 'fault') {
+        setTimeout(() => {
+          prevCell.classList.remove(solvedOrFault);
+        }, this.speed / 2);
+      }
+    }
+    currentCell.className = 'current';
+  }
+
+  /**
+   * Set the board value in array and in DOM
+   * @param {number} row - Row where the value needs to be set
+   * @param {number} column - Column where the value needs to be set
+   * @param {number} value - Value that needs to be set
+   * @param {'solved' | 'fault' | null} solvedOrFault - For visualization
+   * Will be null when no visialization is required.
+   */
+  setCellValue = (row, column, value, solvedOrFault = null) => {
     // Step 1: Get the cell
     const cell = this.board[row][column];
 
@@ -93,28 +127,25 @@ export default class Board {
     }
 
     // Step 3: Visualization steps if required
-    if (visualizeMode) {
-      if (this.prev) {
-        this.prev.classList.remove('current');
-      }
-      cell.$el.classList.add('current');
+    if (solvedOrFault) {
+      this.updateClassList(cell.$el, this.prev, solvedOrFault);
       this.prev = cell.$el;
     }
   }
 
   /**
    * Try one of the numbers
-   * @param {Number} row
-   * @param {Number} column
-   * @param {Number} sector
-   * @param {Number} num
+   * @param {number} row
+   * @param {number} column
+   * @param {number} sector
+   * @param {number} num
    */
   tryOne = (row, column, sector, num) => new Promise((resolve) => {
     // Set Data
     this.row.setVal(row, num, true);
     this.column.setVal(column, num, true);
     this.sector.setVal(sector, num, true);
-    this.setCellValue(row, column, num);
+    this.setCellValue(row, column, num, 'solved');
 
     // For visualizing it
     setTimeout(() => {
@@ -124,7 +155,7 @@ export default class Board {
           this.row.setVal(row, num, false);
           this.column.setVal(column, num, false);
           this.sector.setVal(sector, num, false);
-          this.setCellValue(row, column, '');
+          this.setCellValue(row, column, '', 'fault');
         }
         resolve(res);
       });
@@ -133,8 +164,8 @@ export default class Board {
 
   /**
    * Solves the board
-   * @param {Number} row
-   * @param {Number} column
+   * @param {number} row
+   * @param {number} column
    */
   solveBoard = async (row = 0, column = 0) => {
     // Step 1: Base case
@@ -165,17 +196,17 @@ export default class Board {
 
   /**
    * Setup and solve board
-   * @param {MouseEvent} event
+   * @param {MouseEvent} @param0
    */
-  setUpBeforeSolveAndSolve = async (event) => {
+  setUpBeforeSolveAndSolve = async ({ target }) => {
     // Board is not solved initially
     this.solved = false;
 
     // Set memo and solve board
     if (this.createNewMemo()) {
-      event.target.setAttribute('disabled', true);
+      target.setAttribute('disabled', true);
       await this.solveBoard();
-      event.target.removeAttribute('disabled');
+      target.removeAttribute('disabled');
 
       // Check if board was successfully solved
       if (!this.solved) {
@@ -186,13 +217,13 @@ export default class Board {
 
   /**
    * Set board from array
-   * @param {String} value
+   * @param {string} value
    */
   handleInputFromArray = (value) => {
     try {
       const array = JSON.parse(value);
       array.forEach((row, i) => row.forEach(
-        (cell, j) => this.setCellValue(i, j, cell === '.' ? '' : +cell, false),
+        (cell, j) => this.setCellValue(i, j, cell === '.' ? '' : +cell),
       ));
     } catch (_err) {
       alert('Incorrect array');
@@ -203,12 +234,9 @@ export default class Board {
    * Set the speed
    * @param {InputEvent} event
    */
-  handleSpeedInput = (event) => {
-    // Step 1: Get the value
-    const { value } = event.target;
-
-    // Step 2: Set the value
-    this.speed = value === '' ? 0 : +value;
+  handleSpeedInput = ({ target: { value } }) => {
+    // Step 1: Set the value
+    this.speed = +value;
   }
 
   /**
@@ -218,7 +246,7 @@ export default class Board {
   handleInput = (event) => {
     // Step 1: Destructuring
     const { target: element } = event;
-    const { innerText: value } = element;
+    const { innerText: value, id } = element;
 
     // Step 2: Validation
     if (value.length !== 0 && !/^[0-9]$/.test(value)) {
@@ -227,8 +255,8 @@ export default class Board {
     }
 
     // Step 3: Setting values
-    const [x, y] = element.id.split('-');
-    this.setCellValue(x, y, value.length === 0 ? '' : +value, false);
+    const [x, y] = id.split('-');
+    this.setCellValue(x, y, value.length === 0 ? '' : +value);
   }
 
   /**

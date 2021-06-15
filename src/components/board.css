@@ -25,6 +25,17 @@ tr:nth-child(2n+1) td:nth-child(2n+1) {
 }
 
 td.current {
-  background-color: #ffb8b8 !important;
-  color: #ff007b !important;
+  color: #9F6000 !important;
+  background-color: #FEEFB3 !important;
+}
+
+
+td.fault {
+  color: #D8000C !important;
+  background-color: #FFD2D2 !important;
+}
+
+td.solved {
+  color: #4F8A10 !important;
+  background-color: #DFF2BF !important;
 }
