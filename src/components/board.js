@@ -43,6 +43,15 @@ export default class Board {
   solved = false
 
   /**
+   * Clear all the cell classes
+   */
+  clearAllCellClasses = () => {
+    this.board.forEach((row) => row.forEach(({ $el }) => {
+      $el.className = '';
+    }));
+  }
+
+  /**
    * Sets up the initial memo
    */
   setUpMemo = () => {
@@ -171,6 +180,7 @@ export default class Board {
     // Step 1: Base case
     const [x, y] = this.getFirstUnsolved(row, column);
     if (x === false) {
+      this.solved = true;
       return true;
     }
 
@@ -185,7 +195,6 @@ export default class Board {
       }
 
       if (solved) {
-        this.solved = true;
         break;
       }
     }
@@ -194,13 +203,19 @@ export default class Board {
     return solved;
   }
 
+  cleanUp = () => {
+    this.solved = false;
+    this.prev = null;
+    this.clearAllCellClasses();
+  }
+
   /**
    * Setup and solve board
    * @param {MouseEvent} @param0
    */
   setUpBeforeSolveAndSolve = async ({ target }) => {
-    // Board is not solved initially
-    this.solved = false;
+    // Clean up board in case we are solving again
+    this.cleanUp();
 
     // Set memo and solve board
     if (this.createNewMemo()) {
@@ -211,6 +226,8 @@ export default class Board {
       // Check if board was successfully solved
       if (!this.solved) {
         alert('Board not solvable');
+      } else {
+        alert('Solved');
       }
     }
   }
