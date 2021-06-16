@@ -247,15 +247,15 @@ export default class Board {
     // Step 1: Destructuring
     const { target: element } = event;
     const { innerText: value, id } = element;
+    const [x, y] = id.split('-');
 
     // Step 2: Validation
     if (value.length !== 0 && !/^[0-9]$/.test(value)) {
-      element.innerText = '';
+      this.setCellValue(x, y, '');
       return;
     }
 
     // Step 3: Setting values
-    const [x, y] = id.split('-');
     this.setCellValue(x, y, value.length === 0 ? '' : +value);
   }
 

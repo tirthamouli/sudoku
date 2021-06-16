@@ -4,8 +4,10 @@
   "description": "A visualizer for sudoku solver using backtracking",
   "main": "index.js",
   "scripts": {
+    "dev": "webpack serve --hot",
     "build": "webpack",
-    "dev": "webpack serve --hot"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "author": "Tirthamouli",
   "license": "ISC",
@@ -20,6 +22,7 @@
     "eslint": "^7.14.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
+    "gh-pages": "^3.2.1",
     "html-webpack-plugin": "^4.5.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.6.0",
